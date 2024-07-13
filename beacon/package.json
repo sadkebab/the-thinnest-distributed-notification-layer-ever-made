@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.cjs --format=cjs",
-    "serve": "node dist/index.cjs"
+    "serve": "node dist/index.cjs",
+    "assemble": "docker build -t beacon-dev:$IMG_VERSION -f Dockerfile ."
   },
   "keywords": [],
   "author": "",
