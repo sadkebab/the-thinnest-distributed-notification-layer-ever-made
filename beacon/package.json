@@ -6,14 +6,17 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.cjs --format=cjs",
+    "serve": "node dist/index.cjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/ws": "^8.5.11",
-    "tsx": "^4.16.2"
+    "esbuild": "^0.23.0",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3"
   },
   "dependencies": {
     "@fastify/websocket": "^10.0.1",

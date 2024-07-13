@@ -3,6 +3,7 @@ import { logger } from ".";
 import { setAppKey } from "./auth";
 import { z } from "zod";
 import { getEnv } from "./env";
+import { WebSocket } from "ws";
 
 let nodes = [] as string[];
 let runningStatus: "single-node" | "relay" = "single-node";
@@ -46,7 +47,7 @@ export function connectToBeacon() {
   };
   ws.onmessage = (msg) => {
     try {
-      const data = relayListSchema.parse(JSON.parse(msg.data));
+      const data = relayListSchema.parse(JSON.parse(msg.data.toString()));
       switch (data.type) {
         case "key-update":
           logger.info(`Key updated`);
