@@ -1,24 +1,26 @@
+import { getEnv } from "./env";
+
 export class AuthError extends Error {
   constructor() {
     super("Invalid authentication");
   }
 }
 
-let PUSH_KEY = process.env.PUSH_KEY ?? "testkey";
+let { APP_KEY } = getEnv();
 
 export function authCheck(request: any) {
   if (
     !request.headers["x-relay-key"] ||
-    request.headers["x-relay-key"] !== PUSH_KEY
+    request.headers["x-relay-key"] !== APP_KEY
   ) {
     throw new AuthError();
   }
 }
 
-export function getAuthKey() {
-  return PUSH_KEY;
+export function getAppKey() {
+  return APP_KEY;
 }
 
-export function setAuthKey(key: string) {
-  PUSH_KEY = key;
+export function setAppKey(key: string) {
+  APP_KEY = key;
 }

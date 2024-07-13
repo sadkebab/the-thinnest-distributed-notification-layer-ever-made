@@ -1,19 +1,26 @@
+import "dotenv/config";
 import Fastify from "fastify";
 import webSocket from "@fastify/websocket";
 import { clientConnections } from "./connections";
 import { z, ZodError } from "zod";
-import { connectToBeacon, getRunningStatus, pushToOthers } from "./relays";
+import { connectToBeacon, getRunningStatus } from "./beacon";
 import { authCheck, AuthError } from "./auth";
 
 import { getEnv } from "./env";
+import { bounceToOthers } from "./utils";
 
-const { PORT } = getEnv();
+const { PORT, HOST, NODE_ENV } = getEnv();
 
 const fastify = Fastify({
   logger: true,
+  disableRequestLogging: true,
 });
 
 export const logger = fastify.log;
+
+if (NODE_ENV === "development") {
+  logger.level = "debug";
+}
 
 await fastify.register(webSocket, {
   options: { maxPayload: 1048576 },
@@ -41,7 +48,34 @@ fastify.post("/push", function (request, reply) {
       socket.send(JSON.stringify(body.payload));
     });
 
-    pushToOthers(body);
+    bounceToOthers(body);
+    reply.send({ status: "sent", topic: body.topic, payload: body.payload });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      reply.status(400).send({ error: error.flatten().fieldErrors });
+      return;
+    }
+    if (error instanceof AuthError) {
+      reply.status(401).send({ error: "Invalid authentication" });
+      return;
+    }
+    throw error;
+  }
+});
+
+fastify.post("/bounce", function (request, reply) {
+  try {
+    authCheck(request);
+    const body = pushSchema.parse(request.body);
+
+    logger.debug(
+      `bouncing ${JSON.stringify(body.payload)} to /t/${body.topic}`
+    );
+
+    clients.get(`/t/${body.topic}`)?.forEach((socket) => {
+      socket.send(JSON.stringify(body.payload));
+    });
+
     reply.send({ status: "sent", topic: body.topic, payload: body.payload });
   } catch (error) {
     if (error instanceof ZodError) {
@@ -66,7 +100,7 @@ fastify.get("/t/*", { websocket: true }, function (socket, request) {
   });
 });
 
-fastify.listen({ port: PORT }, function (err) {
+fastify.listen({ port: PORT, host: HOST }, function (err) {
   if (err) {
     logger.error(err);
     process.exit(1);
