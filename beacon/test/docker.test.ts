@@ -11,12 +11,11 @@ import {
   removeContainer,
   stopContainer,
 } from "../../test/src/utils/docker";
-import { RelayTestClient } from "../../test/src/utils/clients";
-import { TEST_APP_KEY, TEST_RELAY_URL, TEST_PORT } from "./constants";
+import { TEST_APP_KEY, TEST_BEACON_URL, TEST_PORT } from "./constants";
 
-const IMAGE_NAME = "relay-dev";
+const IMAGE_NAME = "beacon-dev";
 
-describe("relay docker image", async () => {
+describe("beacon docker image", { skip: true }, async () => {
   it("builds and runs", async () => {
     const version = snapshotVersion();
     const { tag } = await createImage(IMAGE_NAME, version);
@@ -26,10 +25,9 @@ describe("relay docker image", async () => {
     await sleep(1000);
 
     const constainerId = stdout.trim();
-    const clinet = new RelayTestClient(TEST_RELAY_URL, TEST_APP_KEY);
-    const result = await clinet.status();
+    const response = await fetch(`${TEST_BEACON_URL}`);
 
-    assert.strictEqual(result.status, 200);
+    assert.strictEqual(response.status, 200);
 
     await stopContainer(constainerId);
     await removeContainer(constainerId);

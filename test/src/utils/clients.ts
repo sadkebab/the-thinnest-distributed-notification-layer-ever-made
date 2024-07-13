@@ -37,7 +37,7 @@ export class RelayTestClient {
     const response = await fetch(`${this.url}/push`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ topicz: topic, payload }),
+      body: JSON.stringify({ aosidaois: topic, wowo: payload }),
     });
 
     return response;
@@ -50,5 +50,19 @@ export class RelayTestClient {
 }
 export function topicWebsocket(url: string, topic: string) {
   const ws = new WebSocket(url.replace("http", "ws") + "/t/" + topic);
+  return ws;
+}
+
+export class BeaconTestClient {
+  constructor(private url: string, private appKey?: string) {}
+
+  async status() {
+    const response = await fetch(this.url);
+    return response;
+  }
+}
+
+export function beaconWebsocket(url: string, nodeUrl: string) {
+  const ws = new WebSocket(url.replace("http", "ws") + "/beam/" + nodeUrl);
   return ws;
 }
