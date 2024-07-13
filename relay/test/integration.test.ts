@@ -1,9 +1,12 @@
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
-import { exec as execAsync, sleep } from "../../test/src/utils";
+import { exec as execAsync, sleep } from "../../common/src/utils";
 import { exec } from "node:child_process";
 
-import { RelayTestClient, topicWebsocket } from "../../test/src/utils/clients";
+import {
+  RelayTestClient,
+  topicWebsocket,
+} from "../../common/src/utils/clients";
 import {
   TEST_APP_KEY,
   TEST_HOST,

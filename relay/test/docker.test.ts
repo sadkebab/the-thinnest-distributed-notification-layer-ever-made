@@ -4,14 +4,14 @@ import {
   exec as execAsync,
   sleep,
   snapshotVersion,
-} from "../../test/src/utils";
+} from "../../common/src/utils";
 import {
   createImage,
   removeImage,
   removeContainer,
   stopContainer,
-} from "../../test/src/utils/docker";
-import { RelayTestClient } from "../../test/src/utils/clients";
+} from "../../common/src/utils/docker";
+import { RelayTestClient } from "../../common/src/utils/clients";
 import { TEST_APP_KEY, TEST_RELAY_URL, TEST_PORT } from "./constants";
 
 const IMAGE_NAME = "relay-dev";
