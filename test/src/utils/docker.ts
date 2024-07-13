@@ -1,7 +1,4 @@
-import util from "node:util";
-import { exec as exec_sync } from "node:child_process";
-import { sleep } from ".";
-const exec = util.promisify(exec_sync);
+import { exec, sleep } from ".";
 
 export async function buildRelay(version: string) {
   await exec(`cd ../relay && IMG_VERSION=${version} pnpm assemble`);
@@ -14,6 +11,27 @@ export async function runRelay(tag: string, appKey: string, beacon?: string) {
     : `docker run -d -p 44443:44443 -e NODE_ENV=development -e APP_KEY=${appKey} ${tag}`;
   await exec(command);
   await sleep(1000);
+}
+
+export async function createImage(name: string, version: string) {
+  await exec(`docker build -t ${name}:${version} -f Dockerfile .`);
+  const { stdout } = await exec(
+    `docker images ${name} --format "{{.ID}} {{.Repository}}:{{.Tag}}" | grep ${version}`
+  );
+  const [id, tag] = stdout.trim().split(" ");
+  if (!id || !tag) throw new Error("Failed to create image");
+  return { id, tag };
+}
+export async function stopContainer(id: string) {
+  await exec(`docker stop ${id}`);
+}
+
+export async function removeContainer(id: string) {
+  await exec(`docker rm ${id}`);
+}
+
+export async function removeImage(tag: string) {
+  await exec(`docker rmi ${tag}`);
 }
 
 export async function cleanupImage(tag: string) {

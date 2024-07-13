@@ -8,7 +8,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.cjs --format=cjs",
     "serve": "node dist/index.cjs",
-    "assemble": "pnpm build && docker build -t beacon-dev:$IMG_VERSION -f Dockerfile ."
+    "assemble": "pnpm build && docker build -t beacon-dev:$TAG -f Dockerfile .",
+    "test": "node --import tsx --test test/**/*.test.ts"
   },
   "keywords": [],
   "author": "",
