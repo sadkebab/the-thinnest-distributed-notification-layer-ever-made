@@ -6,7 +6,6 @@
   "packageManager": "pnpm@8.9.2",
   "scripts": {
     "test": "pnpm turbo run test",
-    "dev": "pnpm turbo run dev",
     "lint": "pnpm turbo run lint",
     "build": "pnpm turbo run build"
   },

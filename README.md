@@ -22,6 +22,7 @@ The effect on a distributed scale is that clients will receive events if they ar
 # Imrovements
 
 - nexus redundancy
+- multi-channel subscribe and push
 
 # Requiremets
 
@@ -31,8 +32,6 @@ The effect on a distributed scale is that clients will receive events if they ar
 
 # TODO
 
-- pnpm workspaces
-- turbo repo or nix
+- docker image creation and pushing pipeline
 - system tests with docker-compose
-- eslint
-- multi-channel subscribe and push
+- eslint or biome
