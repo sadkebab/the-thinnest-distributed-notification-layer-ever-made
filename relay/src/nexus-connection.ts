@@ -2,35 +2,16 @@ import { logger } from ".";
 
 import { setAppKey } from "./auth";
 import { z } from "zod";
-import { getEnv } from "./env";
+import { useEnv } from "./env";
 import { WebSocket } from "ws";
+import { useRelayState } from "./state";
+import { NexusMessageSchema } from "./validators";
 
-let nodes = [] as string[];
-let runningStatus: "single-node" | "relay" = "single-node";
-
-const { HOST, PORT, PROTOCOL } = getEnv();
-
-export function getRunningStatus() {
-  return runningStatus;
-}
-export function relayNodes() {
-  return nodes;
-}
-
-const relayListSchema = z
-  .object({
-    type: z.literal("relay-list"),
-    relays: z.array(z.string()),
-  })
-  .or(
-    z.object({
-      type: z.literal("key-update"),
-      key: z.string(),
-    })
-  );
+const { HOST, PORT, PROTOCOL } = useEnv();
 
 export function connectToNexus() {
-  const { NEXUS, RETRY_AFTER_S } = getEnv();
+  const { updateNodes, setRunningStatus } = useRelayState();
+  const { NEXUS, RETRY_AFTER_S } = useEnv();
   if (!NEXUS) {
     logger.info("No nexus configured. Running in single-node mode");
     return;
@@ -42,12 +23,14 @@ export function connectToNexus() {
   );
 
   ws.onopen = () => {
-    runningStatus = "relay";
+    setRunningStatus("relay");
     logger.info(`Connection to nexus [${NEXUS}] opened`);
+    const { APP_KEY } = useEnv();
+    ws.send(APP_KEY);
   };
   ws.onmessage = (msg) => {
     try {
-      const data = relayListSchema.parse(JSON.parse(msg.data.toString()));
+      const data = NexusMessageSchema.parse(JSON.parse(msg.data.toString()));
       switch (data.type) {
         case "key-update":
           logger.info(`Key updated`);
@@ -56,7 +39,7 @@ export function connectToNexus() {
         case "relay-list":
           logger.info(`Relays updated`);
           logger.debug(data.relays);
-          nodes = data.relays;
+          updateNodes(data.relays);
           break;
       }
     } catch (e) {
@@ -65,12 +48,12 @@ export function connectToNexus() {
     }
   };
   ws.onclose = () => {
-    runningStatus = "single-node";
+    setRunningStatus("single-node");
     setTimeout(connectToNexus, RETRY_AFTER_S * 1000);
     logger.info(`Connection to nexus [${NEXUS}] closed`);
   };
   ws.onerror = (err) => {
-    runningStatus = "single-node";
+    setRunningStatus("single-node");
     logger.error(`Connection to nexus [${NEXUS}] failed`);
     setTimeout(connectToNexus, RETRY_AFTER_S * 1000);
   };

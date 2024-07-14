@@ -1,27 +1,23 @@
 import "dotenv/config";
 import Fastify from "fastify";
 import webSocket from "@fastify/websocket";
-import { clientConnections } from "./connections";
-import { z, ZodError } from "zod";
-import { connectToNexus, getRunningStatus } from "./nexus";
+
+import { ZodError } from "zod";
+import { connectToNexus } from "./nexus-connection";
 import { authCheck, AuthError } from "./auth";
+import { useRelayState } from "./state";
 
-import { getEnv } from "./env";
-import { bounceToOthers } from "./utils";
+import { useEnv } from "./env";
+import { bounceToOtherNodes } from "./bounce";
+import { PushSchema } from "./validators";
 
-const { PORT, HOST, NODE_ENV } = getEnv();
+const { PORT, HOST, NODE_ENV } = useEnv();
 const fastify = Fastify({
   logger: true,
   disableRequestLogging: true,
 });
 
 export const logger = fastify.log;
-const clients = clientConnections();
-
-const pushSchema = z.object({
-  topic: z.string(),
-  payload: z.any().optional(),
-});
 
 if (NODE_ENV === "development") {
   logger.level = "debug";
@@ -33,13 +29,15 @@ async function start() {
   });
 
   fastify.get("/", function (_, reply) {
-    reply.send({ status: getRunningStatus() });
+    const { runningStatus } = useRelayState();
+    reply.send({ status: runningStatus });
   });
 
   fastify.post("/push", function (request, reply) {
+    const { clients } = useRelayState();
     try {
       authCheck(request);
-      const body = pushSchema.parse(request.body);
+      const body = PushSchema.parse(request.body);
 
       logger.debug(
         `pushing ${JSON.stringify(body.payload)} to /t/${body.topic}`
@@ -49,7 +47,7 @@ async function start() {
         socket.send(JSON.stringify(body.payload));
       });
 
-      bounceToOthers(body);
+      bounceToOtherNodes(body);
       reply.send({ status: "sent", topic: body.topic, payload: body.payload });
     } catch (error) {
       if (error instanceof ZodError) {
@@ -65,9 +63,10 @@ async function start() {
   });
 
   fastify.post("/bounce", function (request, reply) {
+    const { clients } = useRelayState();
     try {
       authCheck(request);
-      const body = pushSchema.parse(request.body);
+      const body = PushSchema.parse(request.body);
 
       logger.debug(
         `bouncing ${JSON.stringify(body.payload)} to /t/${body.topic}`
@@ -92,6 +91,7 @@ async function start() {
   });
 
   fastify.get("/t/*", { websocket: true }, function (socket, request) {
+    const { clients } = useRelayState();
     clients.set(request.url, socket);
     logger.debug(`Client connected: ${request.ip}`);
 

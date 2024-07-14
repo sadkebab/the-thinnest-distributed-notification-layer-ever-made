@@ -1,9 +1,9 @@
 import { logger } from ".";
 import { getAppKey } from "./auth";
-import { relayNodes } from "./nexus";
+import { useRelayState } from "./state";
 
-export function bounceToOthers(body: unknown) {
-  const nodes = relayNodes();
+export function bounceToOtherNodes(body: unknown) {
+  const { nodes } = useRelayState();
   nodes.forEach((connection) => {
     fetch(`http://${connection}/bounce`, {
       method: "POST",

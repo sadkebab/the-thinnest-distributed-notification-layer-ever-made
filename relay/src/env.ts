@@ -28,7 +28,7 @@ const EnvironmentSchema = z.object({
 
 let env: z.infer<typeof EnvironmentSchema>;
 
-export function getEnv() {
+export function useEnv() {
   if (env) return env;
   try {
     env = EnvironmentSchema.parse(process.env);

@@ -1,4 +1,4 @@
-import { getEnv } from "./env";
+import { useEnv } from "./env";
 
 export class AuthError extends Error {
   constructor() {
@@ -6,7 +6,7 @@ export class AuthError extends Error {
   }
 }
 
-let { APP_KEY } = getEnv();
+let { APP_KEY } = useEnv();
 
 export function authCheck(request: any) {
   if (
