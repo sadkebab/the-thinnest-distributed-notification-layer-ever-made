@@ -10,6 +10,7 @@ import { useRelayState } from "./state";
 import { useEnv } from "./env";
 import { bounceToOtherNodes } from "./bounce";
 import { PushSchema } from "./validators";
+import { useLogger } from "./state";
 
 const { PORT, HOST, NODE_ENV } = useEnv();
 const fastify = Fastify({
@@ -17,11 +18,13 @@ const fastify = Fastify({
   disableRequestLogging: true,
 });
 
-export const logger = fastify.log;
-
-if (NODE_ENV === "development") {
-  logger.level = "debug";
-}
+const { setLogger } = useLogger();
+setLogger(() => {
+  if (NODE_ENV === "development") {
+    fastify.log.level = "debug";
+  }
+  return fastify.log;
+});
 
 async function start() {
   await fastify.register(webSocket, {
@@ -35,6 +38,7 @@ async function start() {
 
   fastify.post("/push", function (request, reply) {
     const { clients } = useRelayState();
+    const { logger } = useLogger();
     try {
       authCheck(request);
       const body = PushSchema.parse(request.body);
@@ -64,6 +68,7 @@ async function start() {
 
   fastify.post("/bounce", function (request, reply) {
     const { clients } = useRelayState();
+    const { logger } = useLogger();
     try {
       authCheck(request);
       const body = PushSchema.parse(request.body);
@@ -92,6 +97,7 @@ async function start() {
 
   fastify.get("/t/*", { websocket: true }, function (socket, request) {
     const { clients } = useRelayState();
+    const { logger } = useLogger();
     clients.set(request.url, socket);
     logger.debug(`Client connected: ${request.ip}`);
 
@@ -102,6 +108,7 @@ async function start() {
   });
 
   fastify.listen({ port: PORT, host: HOST }, function (err) {
+    const { logger } = useLogger();
     if (err) {
       logger.error(err);
       process.exit(1);

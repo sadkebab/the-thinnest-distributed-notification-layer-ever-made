@@ -4,17 +4,22 @@ import webSocket from "@fastify/websocket";
 import { useEnv } from "./env";
 import { beaconConnectionContext } from "./connection-context";
 import { useNexusState } from "./state";
+import { useLogger } from "./state";
+import { set } from "zod";
 
 const { HOST, PORT, NODE_ENV, RELAY_TIMEOUT } = useEnv();
+const { setLogger } = useLogger();
 
 const fastify = Fastify({
   logger: true,
 });
 
-const logger = fastify.log;
-if (NODE_ENV === "development") {
-  logger.level = "debug";
-}
+setLogger(() => {
+  if (NODE_ENV === "development") {
+    fastify.log.level = "debug";
+  }
+  return fastify.log;
+});
 
 async function start() {
   await fastify.register(webSocket, {
@@ -54,6 +59,7 @@ async function start() {
   // step 3: nexus sends list of relays if the key matches or closes connection if it doesn't
 
   fastify.get("/link/:node", { websocket: true }, function (socket, request) {
+    const { logger } = useLogger();
     const node = parseNode(request.params);
     const context = beaconConnectionContext();
 
@@ -77,7 +83,7 @@ async function start() {
         socket.send(
           JSON.stringify({
             type: "relay-list",
-            relays: current.filter((node) => node !== node),
+            relays: current.filter((k) => k !== node),
           })
         );
       } else {
@@ -102,6 +108,7 @@ async function start() {
   });
 
   fastify.listen({ port: PORT, host: HOST }, function (err) {
+    const { logger } = useLogger();
     if (err) {
       logger.error(err);
       process.exit(1);

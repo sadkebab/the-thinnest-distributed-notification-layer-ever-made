@@ -1,16 +1,14 @@
-import { logger } from ".";
-
 import { setAppKey } from "./auth";
-import { z } from "zod";
 import { useEnv } from "./env";
 import { WebSocket } from "ws";
-import { useRelayState } from "./state";
+import { useLogger, useRelayState } from "./state";
 import { NexusMessageSchema } from "./validators";
 
 const { HOST, PORT, PROTOCOL } = useEnv();
 
 export function connectToNexus() {
   const { updateNodes, setRunningStatus } = useRelayState();
+  const { logger } = useLogger();
   const { NEXUS, RETRY_AFTER_S } = useEnv();
   if (!NEXUS) {
     logger.info("No nexus configured. Running in single-node mode");

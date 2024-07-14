@@ -1,3 +1,4 @@
+import type { FastifyBaseLogger } from "fastify";
 import { WebSocket } from "ws";
 
 let nodes = [] as string[];
@@ -48,5 +49,19 @@ export function useRelayState() {
     },
     updateNodes,
     setRunningStatus,
+  };
+}
+
+let logger: FastifyBaseLogger;
+
+export function useLogger() {
+  return {
+    get logger() {
+      if (!logger) throw new Error("Logger not set");
+      return logger;
+    },
+    setLogger(l: FastifyBaseLogger | (() => FastifyBaseLogger)) {
+      logger = l instanceof Function ? l() : l;
+    },
   };
 }
