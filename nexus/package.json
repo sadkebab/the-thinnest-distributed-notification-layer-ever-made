@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "lint": "tsc",
     "build": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.cjs --format=cjs",
     "serve": "node dist/index.cjs",
     "assemble": "pnpm build && docker build -t nexus-dev:$TAG -f Dockerfile .",

@@ -13,7 +13,6 @@ import {
   TEST_PORT,
   TEST_NEXUS_URL,
 } from "./constants";
-import { WebSocket } from "ws";
 import { useTimeout } from "../../common/src/utils";
 
 let processId: number;
@@ -51,7 +50,7 @@ describe("nexus", async () => {
       ws.on("open", () => {
         // step 1: connection is established
         timeout.reset();
-        // step 2: beacon sends key
+        // step 2: relay sends key
         ws.send(TEST_APP_KEY);
       });
 

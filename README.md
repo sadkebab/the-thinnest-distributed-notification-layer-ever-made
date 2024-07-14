@@ -9,3 +9,4 @@
 - pnpm workspaces
 - turbo repo or nix
 - system tests with docker-compose
+- eslint

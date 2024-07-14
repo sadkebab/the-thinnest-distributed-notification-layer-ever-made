@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "lint": "tsc",
     "build": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.cjs --format=cjs",
     "serve": "node dist/index.cjs",
     "assemble": "docker build -t relay-dev:$TAG -f Dockerfile .",
