@@ -1,22 +1,19 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import {
-  exec as execAsync,
-  sleep,
-  snapshotVersion,
-} from "../../common/src/utils";
+import { exec as execAsync, sleep, snapshotVersion } from "common/src/utils";
 import {
   createImage,
   removeImage,
   removeContainer,
   stopContainer,
-} from "../../common/src/utils/docker";
-import { TEST_APP_KEY, TEST_NEXUS_URL, TEST_PORT } from "./constants";
+} from "common/src/utils/docker";
+import { RelayTestClient } from "common/src/utils/clients";
+import { TEST_APP_KEY, TEST_RELAY_URL, TEST_PORT } from "./constants";
 
-const IMAGE_NAME = "nexus-dev";
+const IMAGE_NAME = "relay-dev";
 
 describe(
-  "nexus docker image",
+  "relay docker image",
   { skip: process.env.SKIP_DOCKER !== undefined },
   async () => {
     it("builds and runs", async () => {
@@ -28,9 +25,10 @@ describe(
       await sleep(1000);
 
       const constainerId = stdout.trim();
-      const response = await fetch(`${TEST_NEXUS_URL}`);
+      const clinet = new RelayTestClient(TEST_RELAY_URL, TEST_APP_KEY);
+      const result = await clinet.status();
 
-      assert.strictEqual(response.status, 200);
+      assert.strictEqual(result.status, 200);
 
       await stopContainer(constainerId);
       await removeContainer(constainerId);

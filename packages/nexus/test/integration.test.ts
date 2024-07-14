@@ -1,19 +1,15 @@
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
-import { exec as execAsync, sleep } from "../../common/src/utils";
+import { exec as execAsync, sleep, useTimeout } from "common/src/utils";
 import { exec } from "node:child_process";
 
-import {
-  NexusTestClient,
-  nexusWebsocket,
-} from "../../common/src/utils/clients";
+import { NexusTestClient, nexusWebsocket } from "common/src/utils/clients";
 import {
   TEST_APP_KEY,
   TEST_HOST,
   TEST_PORT,
   TEST_NEXUS_URL,
 } from "./constants";
-import { useTimeout } from "../../common/src/utils";
 
 let processId: number;
 

@@ -5,7 +5,6 @@ import { useEnv } from "./env";
 import { beaconConnectionContext } from "./connection-context";
 import { useNexusState } from "./state";
 import { useLogger } from "./state";
-import { set } from "zod";
 
 const { HOST, PORT, NODE_ENV, RELAY_TIMEOUT } = useEnv();
 const { setLogger } = useLogger();
