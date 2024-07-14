@@ -1,11 +1,11 @@
-import { logger } from ".";
 import { getAppKey } from "./auth";
-import { useRelayState } from "./state";
+import { useLogger, useRelayState } from "./state";
 
 export function bounceToOtherNodes(body: unknown) {
   const { nodes } = useRelayState();
+  const { logger } = useLogger();
   nodes.forEach((connection) => {
-    fetch(`http://${connection}/bounce`, {
+    fetch(`${connection}/bounce`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
