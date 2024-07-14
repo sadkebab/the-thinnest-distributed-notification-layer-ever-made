@@ -18,6 +18,7 @@ describe(
   async () => {
     it("builds and runs", async () => {
       const version = snapshotVersion();
+      await execAsync(`pnpm build`);
       const { tag } = await createImage(IMAGE_NAME, version);
       const { stdout } = await execAsync(
         `docker run -d -p ${TEST_PORT}:${TEST_PORT} -e NODE_ENV=development -e APP_KEY=${TEST_APP_KEY} ${tag}`

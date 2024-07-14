@@ -9,8 +9,10 @@
     "lint": "tsc",
     "build": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.cjs --format=cjs",
     "serve": "node dist/index.cjs",
-    "assemble": "docker build -t relay-dev:$TAG -f Dockerfile .",
-    "test": "node --import tsx --test test/**/*.test.ts"
+    "assemble": "pnpm build && docker build -t relay-dev:$TAG -f Dockerfile .",
+    "test": "SKIP_DOCKER=true node --import tsx --test test/**/*.test.ts",
+    "test:docker": "node --import tsx --test test/docker.test.ts",
+    "test:all": "node --import tsx --test test/**/*.test.ts"
   },
   "keywords": [],
   "author": "",

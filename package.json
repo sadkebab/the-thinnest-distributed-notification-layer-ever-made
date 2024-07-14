@@ -3,10 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "packageManager": "pnpm@8.9.2",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "pnpm turbo run test",
+    "dev": "pnpm turbo run dev",
+    "lint": "pnpm turbo run lint",
+    "build": "pnpm turbo run build"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "turbo": "^2.0.6"
+  }
 }

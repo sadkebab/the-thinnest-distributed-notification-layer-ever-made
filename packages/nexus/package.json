@@ -10,7 +10,9 @@
     "build": "tsc && esbuild src/index.ts --bundle --minify --platform=node --outfile=dist/index.cjs --format=cjs",
     "serve": "node dist/index.cjs",
     "assemble": "pnpm build && docker build -t nexus-dev:$TAG -f Dockerfile .",
-    "test": "node --import tsx --test test/**/*.test.ts"
+    "test": "SKIP_DOCKER=true node --import tsx --test test/**/*.test.ts",
+    "test:docker": "node --import tsx --test test/docker.test.ts",
+    "test:all": "node --import tsx --test test/**/*.test.ts"
   },
   "keywords": [],
   "author": "",

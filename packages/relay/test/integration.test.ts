@@ -18,7 +18,7 @@ describe("relay", async () => {
     await execAsync(`pnpm build`);
 
     const { pid } = exec(
-      `HOST=${TEST_HOST} PORT=${TEST_PORT} APP_KEY=${TEST_APP_KEY} pnpm serve`
+      `HOST=${TEST_HOST} PORT=${TEST_PORT} APP_KEY=${TEST_APP_KEY} NEXUS='' pnpm serve`
     );
 
     if (!pid) throw new Error("Failed to start relay");

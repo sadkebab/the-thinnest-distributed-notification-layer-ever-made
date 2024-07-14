@@ -1,0 +1,19 @@
+{
+  "tasks": {
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "lint": {
+      "outputs": []
+    },
+    "test": {
+      "outputs": []
+    },
+    "build": {
+      "outputs": [
+        "dist/**"
+      ]
+    }
+  }
+}
