@@ -16,3 +16,26 @@ export function snapshotVersion() {
     .replaceAll(":", ".")
     .replaceAll("-", ".");
 }
+
+export function useTimeout(cb: () => void) {
+  let timeout: NodeJS.Timeout;
+
+  const start = (time = 3000) => {
+    timeout = setTimeout(cb, time);
+  };
+
+  const stop = () => {
+    clearTimeout(timeout);
+  };
+
+  const reset = (time?: number) => {
+    stop();
+    start(time);
+  };
+
+  return {
+    start,
+    stop,
+    reset,
+  };
+}

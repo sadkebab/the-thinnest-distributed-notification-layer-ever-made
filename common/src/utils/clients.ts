@@ -63,6 +63,6 @@ export class NexusTestClient {
 }
 
 export function nexusWebsocket(url: string, nodeUrl: string) {
-  const ws = new WebSocket(url.replace("http", "ws") + "/beam/" + nodeUrl);
+  const ws = new WebSocket(url.replace("http", "ws") + "/link/" + nodeUrl);
   return ws;
 }
