@@ -1,9 +1,5 @@
 {
   "tasks": {
-    "dev": {
-      "persistent": true,
-      "cache": false
-    },
     "lint": {
       "outputs": []
     },
