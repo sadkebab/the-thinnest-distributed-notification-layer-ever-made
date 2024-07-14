@@ -1,9 +1,10 @@
 # About this
 
 This is supposed to be a distributable pub/sub notification system that allows stateless backends to communicate with frontends in realtime.
-It is meant to be used in distributed systems but it can also be used in single-node setups.
-It is meant to have the smallest API surface area possible, but powerful enough to be built application specific abstractions on top of it.
-It is meant to be plug and play for local development, ideally you should just include a docker image in a docker-compose file and run it without any additional configuration except exposing the port and setting an APP_KEY variable for authenticing the push requests.
+
+- It is meant to be used in distributed systems but it can also be used in single-node setups.
+- It is meant to have the smallest API surface area possible, but powerful enough to be built application specific abstractions on top of it.
+- It is meant to be plug and play for local development, ideally you should just include a docker image in a docker-compose file and run it without any additional configuration except exposing the port and setting an APP_KEY variable for authenticing the push requests.
 
 # How it works
 
