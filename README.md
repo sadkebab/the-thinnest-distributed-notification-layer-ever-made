@@ -19,7 +19,7 @@ Once the relay node receives the push request, it will propagate it to clients c
 Relay nodes are fault tolerant, they will try to connect to the nexus and if the connection is interrupted, they will retry after a timeout.
 The effect on a distributed scale is that clients will receive events if they are pushed to the same relay node, guaranteeing that it will always work properly in the region of the node, making it a problem only for frontends connected to nodes in other regions.
 
-# Imrovements
+# Improvements
 
 - nexus redundancy
 - multi-channel subscribe and push
