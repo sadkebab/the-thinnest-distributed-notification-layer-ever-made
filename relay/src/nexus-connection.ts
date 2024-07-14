@@ -9,7 +9,7 @@ const { HOST, PORT, PROTOCOL } = useEnv();
 export function connectToNexus() {
   const { updateNodes, setRunningStatus } = useRelayState();
   const { logger } = useLogger();
-  const { NEXUS, RETRY_AFTER_S } = useEnv();
+  const { NEXUS, RETRY_AFTER: RETRY_AFTER_S } = useEnv();
   if (!NEXUS) {
     logger.info("No nexus configured. Running in single-node mode");
     return;

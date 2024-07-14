@@ -23,7 +23,12 @@ const EnvironmentSchema = z.object({
     .optional()
     .default(DEFAULT_NODE_ENV),
   NEXUS: z.string().optional(),
-  RETRY_AFTER_S: z.number().optional().default(DEFAULT_RETRY_AFTER_S),
+  RETRY_AFTER: z
+    .string()
+    .optional()
+    .default(DEFAULT_RETRY_AFTER_S.toString())
+    .transform((v) => parseInt(v))
+    .pipe(z.number().int().min(0)),
 });
 
 let env: z.infer<typeof EnvironmentSchema>;
