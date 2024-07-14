@@ -13,6 +13,7 @@ import { PushSchema } from "./validators";
 import { useLogger } from "./state";
 
 const { PORT, HOST, NODE_ENV } = useEnv();
+
 const fastify = Fastify({
   logger: true,
   disableRequestLogging: true,
