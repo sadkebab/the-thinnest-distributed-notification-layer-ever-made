@@ -1,13 +1,13 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import { exec as execAsync, sleep, snapshotVersion } from "common/src/utils";
+import { exec as execAsync, sleep, snapshotVersion } from "common/utils";
 import {
   createImage,
   removeImage,
   removeContainer,
   stopContainer,
-} from "common/src/utils/docker";
-import { RelayTestClient } from "common/src/utils/clients";
+} from "common/utils/docker";
+import { RelayTestClient } from "common/utils/clients";
 import { TEST_APP_KEY, TEST_RELAY_URL, TEST_PORT } from "./constants";
 
 const IMAGE_NAME = "relay-dev";

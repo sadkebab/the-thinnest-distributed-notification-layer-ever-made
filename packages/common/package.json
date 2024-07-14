@@ -2,9 +2,14 @@
   "name": "common",
   "version": "0.0.1",
   "description": "",
-  "main": "./src/index.ts",
   "scripts": {
     "test": "node --import tsx --test src/**/*.test.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./utils/docker": "./src/utils/docker.ts",
+    "./utils/clients": "./src/utils/clients.ts"
   },
   "keywords": [],
   "author": "",
