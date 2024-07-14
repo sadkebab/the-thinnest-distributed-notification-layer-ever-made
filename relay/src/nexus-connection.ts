@@ -19,7 +19,7 @@ export function connectToNexus() {
 
   logger.info(`Connecting to nexus [${NEXUS}]`);
   const ws = new WebSocket(
-    `ws://${NEXUS}/beam/${PROTOCOL}%3A%2F%2F${HOST}%3A${PORT}`
+    `ws://${NEXUS}/link/${PROTOCOL}%3A%2F%2F${HOST}%3A${PORT}`
   );
 
   ws.onopen = () => {

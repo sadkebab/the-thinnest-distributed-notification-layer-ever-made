@@ -27,13 +27,6 @@ const clients = {
   },
 };
 
-function getRunningStatus() {
-  return runningStatus;
-}
-function relayNodes() {
-  return nodes;
-}
-
 function updateNodes(newNodes: string[]) {
   nodes = newNodes;
 }
@@ -45,12 +38,14 @@ function setRunningStatus(status: "single-node" | "relay") {
 export function useRelayState() {
   return {
     get runningStatus() {
-      return getRunningStatus();
+      return runningStatus;
     },
     get nodes() {
-      return relayNodes();
+      return nodes;
     },
-    clients,
+    get clients() {
+      return clients;
+    },
     updateNodes,
     setRunningStatus,
   };
