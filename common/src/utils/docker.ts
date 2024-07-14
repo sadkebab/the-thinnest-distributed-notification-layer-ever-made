@@ -5,9 +5,9 @@ export async function buildRelay(version: string) {
   return `relay-dev:${version}`;
 }
 
-export async function runRelay(tag: string, appKey: string, beacon?: string) {
-  const command = beacon
-    ? `docker run -d -p 44443:44443 -e NODE_ENV=development -e APP_KEY=${appKey} -e BEACON=${beacon} ${tag}`
+export async function runRelay(tag: string, appKey: string, nexus?: string) {
+  const command = nexus
+    ? `docker run -d -p 44443:44443 -e NODE_ENV=development -e APP_KEY=${appKey} -e NEXUS=${nexus} ${tag}`
     : `docker run -d -p 44443:44443 -e NODE_ENV=development -e APP_KEY=${appKey} ${tag}`;
   await exec(command);
   await sleep(1000);

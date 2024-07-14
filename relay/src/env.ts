@@ -22,7 +22,7 @@ const EnvironmentSchema = z.object({
     .enum(["development", "production"])
     .optional()
     .default(DEFAULT_NODE_ENV),
-  BEACON: z.string().optional(),
+  NEXUS: z.string().optional(),
   RETRY_AFTER_S: z.number().optional().default(DEFAULT_RETRY_AFTER_S),
 });
 

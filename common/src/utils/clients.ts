@@ -53,7 +53,7 @@ export function topicWebsocket(url: string, topic: string) {
   return ws;
 }
 
-export class BeaconTestClient {
+export class NexusTestClient {
   constructor(private url: string, private appKey?: string) {}
 
   async status() {
@@ -62,7 +62,7 @@ export class BeaconTestClient {
   }
 }
 
-export function beaconWebsocket(url: string, nodeUrl: string) {
+export function nexusWebsocket(url: string, nodeUrl: string) {
   const ws = new WebSocket(url.replace("http", "ws") + "/beam/" + nodeUrl);
   return ws;
 }

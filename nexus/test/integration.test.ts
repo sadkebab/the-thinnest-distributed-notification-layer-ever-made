@@ -4,20 +4,20 @@ import { exec as execAsync, sleep } from "../../common/src/utils";
 import { exec } from "node:child_process";
 
 import {
-  BeaconTestClient,
-  beaconWebsocket,
+  NexusTestClient,
+  nexusWebsocket,
 } from "../../common/src/utils/clients";
 import {
   TEST_APP_KEY,
   TEST_HOST,
   TEST_PORT,
-  TEST_BEACON_URL,
+  TEST_NEXUS_URL,
 } from "./constants";
 import { WebSocket } from "ws";
 
 let processId: number;
 
-describe("beacon", async () => {
+describe("nexus", async () => {
   before(async () => {
     await execAsync(`pnpm build`);
 
@@ -25,21 +25,21 @@ describe("beacon", async () => {
       `HOST=${TEST_HOST} PORT=${TEST_PORT} APP_KEY=${TEST_APP_KEY} pnpm serve`
     );
 
-    if (!pid) throw new Error("Failed to start beacon");
+    if (!pid) throw new Error("Failed to start nexus");
     processId = pid;
 
     await sleep(300);
   });
 
   it("respondes", async () => {
-    const client = new BeaconTestClient(TEST_BEACON_URL, TEST_APP_KEY);
+    const client = new NexusTestClient(TEST_NEXUS_URL, TEST_APP_KEY);
     const result = await client.status();
     assert.strictEqual(result.status, 200);
   });
 
   it("it accepts relays", async () => {
     const fakeRelay = encodeURIComponent("http://localhost:44443");
-    const ws = beaconWebsocket(TEST_BEACON_URL, fakeRelay);
+    const ws = nexusWebsocket(TEST_NEXUS_URL, fakeRelay);
 
     const timeout = setTimeout(() => {
       assert.fail("timeout");
@@ -69,7 +69,7 @@ describe("beacon", async () => {
 
     const [ws1, ws2] = await Promise.all([
       new Promise<WebSocket>((resolve) => {
-        const ws = beaconWebsocket(TEST_BEACON_URL, fakeRelay);
+        const ws = nexusWebsocket(TEST_NEXUS_URL, fakeRelay);
         // this fake relay will reveice a [] when it's connected and a [fakeRelay2Url] when the other fake relay is connected
         const expectedRelays = [[], [fakeRelay2Url]];
         ws.on("open", () => {
@@ -89,7 +89,7 @@ describe("beacon", async () => {
         });
       }),
       new Promise<WebSocket>((resolve) => {
-        const ws = beaconWebsocket(TEST_BEACON_URL, fakeRelay2);
+        const ws = nexusWebsocket(TEST_NEXUS_URL, fakeRelay2);
         // this fake relay will reveice a [fakeRelayUrl] when it's connected
         const expectedRelays = [[fakeRelayUrl]];
         ws.on("open", () => {

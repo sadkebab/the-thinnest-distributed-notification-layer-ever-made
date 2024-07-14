@@ -1,6 +1,6 @@
 import { logger } from ".";
 import { getAppKey } from "./auth";
-import { relayNodes } from "./beacon";
+import { relayNodes } from "./nexus";
 
 export function bounceToOthers(body: unknown) {
   const nodes = relayNodes();

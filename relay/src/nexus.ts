@@ -29,21 +29,21 @@ const relayListSchema = z
     })
   );
 
-export function connectToBeacon() {
-  const { BEACON, RETRY_AFTER_S } = getEnv();
-  if (!BEACON) {
-    logger.info("No beacon configured. Running in single-node mode");
+export function connectToNexus() {
+  const { NEXUS, RETRY_AFTER_S } = getEnv();
+  if (!NEXUS) {
+    logger.info("No nexus configured. Running in single-node mode");
     return;
   }
 
-  logger.info(`Connecting to beacon [${BEACON}]`);
+  logger.info(`Connecting to nexus [${NEXUS}]`);
   const ws = new WebSocket(
-    `ws://${BEACON}/beam/${PROTOCOL}%3A%2F%2F${HOST}%3A${PORT}`
+    `ws://${NEXUS}/beam/${PROTOCOL}%3A%2F%2F${HOST}%3A${PORT}`
   );
 
   ws.onopen = () => {
     runningStatus = "relay";
-    logger.info(`Connection to beacon [${BEACON}] opened`);
+    logger.info(`Connection to nexus [${NEXUS}] opened`);
   };
   ws.onmessage = (msg) => {
     try {
@@ -66,12 +66,12 @@ export function connectToBeacon() {
   };
   ws.onclose = () => {
     runningStatus = "single-node";
-    setTimeout(connectToBeacon, RETRY_AFTER_S * 1000);
-    logger.info(`Connection to beacon [${BEACON}] closed`);
+    setTimeout(connectToNexus, RETRY_AFTER_S * 1000);
+    logger.info(`Connection to nexus [${NEXUS}] closed`);
   };
   ws.onerror = (err) => {
     runningStatus = "single-node";
-    logger.error(`Connection to beacon [${BEACON}] failed`);
-    setTimeout(connectToBeacon, RETRY_AFTER_S * 1000);
+    logger.error(`Connection to nexus [${NEXUS}] failed`);
+    setTimeout(connectToNexus, RETRY_AFTER_S * 1000);
   };
 }

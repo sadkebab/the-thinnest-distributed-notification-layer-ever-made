@@ -3,7 +3,7 @@ import Fastify from "fastify";
 import webSocket from "@fastify/websocket";
 import { clientConnections } from "./connections";
 import { z, ZodError } from "zod";
-import { connectToBeacon, getRunningStatus } from "./beacon";
+import { connectToNexus, getRunningStatus } from "./nexus";
 import { authCheck, AuthError } from "./auth";
 
 import { getEnv } from "./env";
@@ -110,4 +110,4 @@ async function start() {
 }
 
 start();
-connectToBeacon();
+connectToNexus();
