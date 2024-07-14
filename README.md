@@ -10,3 +10,4 @@
 - turbo repo or nix
 - system tests with docker-compose
 - eslint
+- multi-channel subscribe and push
