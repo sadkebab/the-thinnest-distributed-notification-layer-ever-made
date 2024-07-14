@@ -14,6 +14,7 @@ import {
   TEST_NEXUS_URL,
 } from "./constants";
 import { WebSocket } from "ws";
+import { useTimeout } from "../../common/src/utils";
 
 let processId: number;
 
@@ -38,79 +39,86 @@ describe("nexus", async () => {
   });
 
   it("it accepts relays", async () => {
-    const fakeRelay = encodeURIComponent("http://localhost:44443");
-    const ws = nexusWebsocket(TEST_NEXUS_URL, fakeRelay);
+    await new Promise<void>((resolve, reject) => {
+      const fakeRelay = encodeURIComponent("http://localhost:44443");
+      const ws = nexusWebsocket(TEST_NEXUS_URL, fakeRelay);
+      const timeout = useTimeout(() => {
+        assert.fail("timeout");
+      });
 
-    const timeout = setTimeout(() => {
-      assert.fail("timeout");
-    }, 3000);
+      timeout.start();
 
-    ws.on("open", () => {
-      clearTimeout(timeout);
-      assert.ok(true);
-      ws.close();
+      ws.on("open", () => {
+        // step 1: connection is established
+        timeout.reset();
+        // step 2: beacon sends key
+        ws.send(TEST_APP_KEY);
+      });
+
+      ws.on("message", (data) => {
+        // step 3 success: nexus sends list of relays
+        timeout.stop();
+        const json = JSON.parse(data.toString());
+        assert.deepStrictEqual(json, {
+          type: "relay-list",
+          relays: [],
+        });
+        assert.ok(true);
+        ws.close();
+        resolve();
+      });
+      ws.on("close", () => {
+        // step 3 failure: the connection is closed
+        timeout.stop();
+        reject(new Error("connection closed"));
+      });
+    }).catch(() => {
+      assert.fail("connection closed by nexus");
     });
   });
 
-  // TODO this test is very hard to read, should be refactored
-  it("notifies other relays", async () => {
-    const fakeRelayUrl = "http://localhost:44443";
-    const fakeRelay = encodeURIComponent(fakeRelayUrl);
-    const fakeRelay2Url = "http://localhost:44444";
-    const fakeRelay2 = encodeURIComponent(fakeRelay2Url);
+  it("rejects requests without app key", async () => {
+    await new Promise<void>((resolve, reject) => {
+      const fakeRelay = encodeURIComponent("http://localhost:44443");
+      const ws = nexusWebsocket(TEST_NEXUS_URL, fakeRelay);
+      const timeout = useTimeout(() => {
+        assert.fail("timeout");
+      });
 
-    const timeout = setTimeout(() => {
-      assert.fail("timeout");
-    }, 3000);
+      timeout.start();
 
-    const timeout2 = setTimeout(() => {
-      assert.fail("timeout");
-    }, 3000);
+      ws.on("open", () => {
+        // step 1: connection is established
+        timeout.reset();
+        // step 2: beacon sends key
+        ws.send("wrong_key");
+      });
 
-    const [ws1, ws2] = await Promise.all([
-      new Promise<WebSocket>((resolve) => {
-        const ws = nexusWebsocket(TEST_NEXUS_URL, fakeRelay);
-        // this fake relay will reveice a [] when it's connected and a [fakeRelay2Url] when the other fake relay is connected
-        const expectedRelays = [[], [fakeRelay2Url]];
-        ws.on("open", () => {
-          clearTimeout(timeout);
+      ws.on("message", (data) => {
+        // step 3 success: nexus sends list of relays
+        timeout.stop();
+        const json = JSON.parse(data.toString());
+        assert.deepStrictEqual(json, {
+          type: "relay-list",
+          relays: [],
         });
-
-        ws.on("message", (data) => {
-          const json = JSON.parse(data.toString());
-          if (expectedRelays.length === 0) return;
-
-          assert.deepStrictEqual(json, {
-            type: "relay-list",
-            relays: expectedRelays.shift(),
-          });
-
-          resolve(ws);
-        });
-      }),
-      new Promise<WebSocket>((resolve) => {
-        const ws = nexusWebsocket(TEST_NEXUS_URL, fakeRelay2);
-        // this fake relay will reveice a [fakeRelayUrl] when it's connected
-        const expectedRelays = [[fakeRelayUrl]];
-        ws.on("open", () => {
-          clearTimeout(timeout2);
-        });
-        ws.on("message", (data) => {
-          const json = JSON.parse(data.toString());
-          if (expectedRelays.length === 0) return;
-
-          assert.deepStrictEqual(json, {
-            type: "relay-list",
-            relays: expectedRelays.shift(),
-          });
-
-          resolve(ws);
-        });
-      }),
-    ]);
-
-    ws1.close();
-    ws2.close();
+        assert.fail("wrong key has been accepted");
+      });
+      ws.on("error", () => {
+        // step 3 failure: the connection is closed
+        timeout.stop();
+        reject(new Error("connection closed"));
+      });
+      ws.on("close", () => {
+        // step 3 failure: the connection is closed
+        timeout.stop();
+        assert.ok(true);
+        ws.close();
+        resolve();
+      });
+    }).catch(() => {
+      assert.fail("connection closed by nexus");
+    });
   });
 
   after(async () => {

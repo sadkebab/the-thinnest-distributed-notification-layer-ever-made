@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const DEFAULT_PORT = 44401;
 const DEFAULT_HOST = "localhost";
+const DEFAULT_RELAY_TIMEOUT = 5;
 
 const EnvironmentSchema = z.object({
   APP_KEY: z.string({
@@ -14,7 +15,12 @@ const EnvironmentSchema = z.object({
     .default(DEFAULT_PORT.toString())
     .transform((v) => parseInt(v))
     .pipe(z.number().int().min(0).max(65535)),
-
+  RELAY_TIMEOUT: z
+    .string()
+    .optional()
+    .default(DEFAULT_RELAY_TIMEOUT.toString())
+    .transform((v) => parseInt(v))
+    .pipe(z.number().int().min(0).max(60)),
   NODE_ENV: z
     .enum(["development", "production"])
     .optional()
@@ -23,7 +29,7 @@ const EnvironmentSchema = z.object({
 
 let env: z.infer<typeof EnvironmentSchema>;
 
-export function getEnv() {
+export function useEnv() {
   if (env) return env;
   try {
     env = EnvironmentSchema.parse(process.env);
